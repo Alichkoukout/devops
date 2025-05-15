@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Configuration
-ES_URL="http://localhost:9200"
-KIBANA_URL="http://localhost:5601"
-LOGSTASH_URL="http://localhost:9600"
-PROMETHEUS_URL="http://localhost:9090"
-GRAFANA_URL="http://localhost:3000"
+ES_URL="http://test-elasticsearch:9200"
+KIBANA_URL="http://test-kibana:5601"
+LOGSTASH_URL="http://test-logstash:9600"
+PROMETHEUS_URL="http://test-prometheus:9090"
+GRAFANA_URL="http://test-grafana:3000"
 
 # Fonction pour tester l'intégration Elasticsearch-Logstash
 test_es_logstash_integration() {
@@ -19,15 +19,15 @@ test_es_logstash_integration() {
                 "@timestamp": { "type": "date" }
             }
         }
-    }'
+    }' --connect-timeout 30
     
     # Envoyer un log via Logstash
     echo '{"message": "Test log", "@timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"}' | \
-    nc localhost 5044
+    nc test-logstash 5044
     
     # Vérifier que le log est indexé
     sleep 5
-    response=$(curl -s "$ES_URL/test-index/_search?q=message:Test+log")
+    response=$(curl -s --connect-timeout 30 "$ES_URL/test-index/_search?q=message:Test+log")
     if echo "$response" | grep -q "Test log"; then
         echo "✅ Elasticsearch-Logstash integration test passed"
         return 0
@@ -50,10 +50,10 @@ test_kibana_es_integration() {
                 "title": "test-*",
                 "timeFieldName": "@timestamp"
             }
-        }'
+        }' --connect-timeout 30
     
     # Vérifier que l'index pattern est créé
-    response=$(curl -s "$KIBANA_URL/api/saved_objects/_find?type=index-pattern")
+    response=$(curl -s --connect-timeout 30 "$KIBANA_URL/api/saved_objects/_find?type=index-pattern")
     if echo "$response" | grep -q "test-pattern"; then
         echo "✅ Kibana-Elasticsearch integration test passed"
         return 0
@@ -73,12 +73,12 @@ test_prometheus_grafana_integration() {
         -d '{
             "name": "Prometheus",
             "type": "prometheus",
-            "url": "http://prometheus:9090",
+            "url": "http://test-prometheus:9090",
             "access": "proxy"
-        }'
+        }' --connect-timeout 30
     
     # Vérifier que la source de données est créée
-    response=$(curl -s "$GRAFANA_URL/api/datasources")
+    response=$(curl -s --connect-timeout 30 "$GRAFANA_URL/api/datasources")
     if echo "$response" | grep -q "Prometheus"; then
         echo "✅ Prometheus-Grafana integration test passed"
         return 0
@@ -109,11 +109,11 @@ test_filebeat_logstash_integration() {
                     }
                 }
             }
-        }'
+        }' --connect-timeout 30
     
     # Vérifier que le log est reçu par Logstash
     sleep 5
-    response=$(curl -s "$LOGSTASH_URL/_node/stats")
+    response=$(curl -s --connect-timeout 30 "$LOGSTASH_URL/_node/stats")
     if echo "$response" | grep -q "test-pipeline"; then
         echo "✅ Filebeat-Logstash integration test passed"
         return 0
@@ -133,10 +133,10 @@ test_prometheus_grafana_integration || failed=1
 test_filebeat_logstash_integration || failed=1
 
 # Nettoyage
-curl -X DELETE "$ES_URL/test-index"
-curl -X DELETE "$KIBANA_URL/api/saved_objects/index-pattern/test-pattern"
-curl -X DELETE "$GRAFANA_URL/api/datasources/1"
-rm /tmp/test.log
+curl -X DELETE "$ES_URL/test-index" --connect-timeout 30
+curl -X DELETE "$KIBANA_URL/api/saved_objects/index-pattern/test-pattern" --connect-timeout 30
+curl -X DELETE "$GRAFANA_URL/api/datasources/1" --connect-timeout 30
+rm -f /tmp/test.log
 
 # Afficher le résultat final
 if [ $failed -eq 0 ]; then

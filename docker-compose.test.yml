@@ -14,6 +14,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
 
   test-kibana:
     image: docker.elastic.co/kibana/kibana:8.7.0
@@ -24,16 +26,25 @@ services:
     depends_on:
       test-elasticsearch:
         condition: service_healthy
+    volumes:
+      - ./monitoring/config/kibana:/usr/share/kibana/config
 
   test-logstash:
     image: docker.elastic.co/logstash/logstash:8.7.0
     volumes:
       - ./monitoring/config/logstash/pipelines/:/usr/share/logstash/pipeline/
+      - ./monitoring/config/logstash/config/:/usr/share/logstash/config/
     ports:
       - "5044:5044"
+      - "9600:9600"
     depends_on:
       test-elasticsearch:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9600"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   test-filebeat:
     image: docker.elastic.co/beats/filebeat:8.7.0
@@ -41,36 +52,50 @@ services:
       - ./monitoring/config/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - filebeat-data:/usr/share/filebeat/data
     depends_on:
       test-logstash:
-        condition: service_started
+        condition: service_healthy
 
   test-prometheus:
     image: prom/prometheus:v2.45.0
     volumes:
-      - ./monitoring/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/config/prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
     ports:
       - "9090:9090"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   test-grafana:
     image: grafana/grafana:9.5.2
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
     volumes:
       - ./monitoring/config/grafana/provisioning:/etc/grafana/provisioning
+      - grafana-data:/var/lib/grafana
     ports:
       - "3000:3000"
     depends_on:
       test-prometheus:
-        condition: service_started
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   test-runner:
-    image: node:16
+    image: alpine:latest
     volumes:
       - .:/app
     working_dir: /app
     command: >
-      bash -c "
+      sh -c "
         echo 'Waiting for services to be ready...' &&
         sleep 30 &&
         echo 'Running tests...' &&
@@ -78,9 +103,21 @@ services:
         ./monitoring/scripts/run-integration-tests.sh
       "
     depends_on:
-      - test-elasticsearch
-      - test-kibana
-      - test-logstash
-      - test-filebeat
-      - test-prometheus
-      - test-grafana 
+      test-elasticsearch:
+        condition: service_healthy
+      test-kibana:
+        condition: service_started
+      test-logstash:
+        condition: service_healthy
+      test-filebeat:
+        condition: service_started
+      test-prometheus:
+        condition: service_healthy
+      test-grafana:
+        condition: service_healthy
+
+volumes:
+  es-data:
+  filebeat-data:
+  prometheus-data:
+  grafana-data: 

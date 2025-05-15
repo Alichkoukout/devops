@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  test-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  test-kibana:
+    image: docker.elastic.co/kibana/kibana:8.7.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://test-elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      test-elasticsearch:
+        condition: service_healthy
+
+  test-logstash:
+    image: docker.elastic.co/logstash/logstash:8.7.0
+    volumes:
+      - ./monitoring/config/logstash/pipelines/:/usr/share/logstash/pipeline/
+    ports:
+      - "5044:5044"
+    depends_on:
+      test-elasticsearch:
+        condition: service_healthy
+
+  test-filebeat:
+    image: docker.elastic.co/beats/filebeat:8.7.0
+    volumes:
+      - ./monitoring/config/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      test-logstash:
+        condition: service_started
+
+  test-prometheus:
+    image: prom/prometheus:v2.45.0
+    volumes:
+      - ./monitoring/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  test-grafana:
+    image: grafana/grafana:9.5.2
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./monitoring/config/grafana/provisioning:/etc/grafana/provisioning
+    ports:
+      - "3000:3000"
+    depends_on:
+      test-prometheus:
+        condition: service_started
+
+  test-runner:
+    image: node:16
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: >
+      bash -c "
+        echo 'Waiting for services to be ready...' &&
+        sleep 30 &&
+        echo 'Running tests...' &&
+        ./monitoring/scripts/run-tests.sh &&
+        ./monitoring/scripts/run-integration-tests.sh
+      "
+    depends_on:
+      - test-elasticsearch
+      - test-kibana
+      - test-logstash
+      - test-filebeat
+      - test-prometheus
+      - test-grafana 

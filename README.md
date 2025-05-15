@@ -1,100 +1,138 @@
-# Projet PFA - Application Mobile et Backend
+# Système de Monitoring DevOps
 
-Ce projet est composé d'une application mobile React Native (frontend) et d'un backend Spring Boot.
+Un système de monitoring complet basé sur la stack ELK (Elasticsearch, Logstash, Kibana) avec des fonctionnalités avancées de surveillance et d'alerte.
 
-## Structure du Projet
+## Fonctionnalités
 
-```
-.
-├── frontendPfa/          # Application React Native
-└── backendpfa/          # Backend Spring Boot
-```
+- **Monitoring des Logs**
+  - Collecte centralisée des logs
+  - Analyse en temps réel
+  - Recherche avancée
+  - Visualisations personnalisées
+
+- **Monitoring des Métriques**
+  - Métriques système (CPU, mémoire, disque)
+  - Métriques applicatives
+  - Alertes configurables
+  - Tableaux de bord personnalisés
+
+- **Sécurité**
+  - Authentification
+  - Autorisation basée sur les rôles
+  - Chiffrement des communications
+  - Audit des accès
 
 ## Prérequis
 
-### Frontend
-- Node.js (v14 ou supérieur)
-- npm ou yarn
-- Expo CLI
-- React Native development environment
+- Docker et Docker Compose
+- 4GB RAM minimum
+- 20GB espace disque
+- Linux/Unix système
 
-### Backend
-- Java JDK 17 ou supérieur
-- Maven
-- PostgreSQL
+## Installation
 
-## Installation et Démarrage
-
-### Frontend
-
-1. Naviguer vers le dossier frontend :
+1. Cloner le repository :
 ```bash
-cd frontendPfa
+git clone https://github.com/Alichkoukout/devops.git
+cd devops
 ```
 
-2. Installer les dépendances :
+2. Configurer les variables d'environnement :
 ```bash
-npm install
+cp .env.example .env
+# Éditer .env avec vos configurations
 ```
 
-3. Démarrer l'application :
+3. Démarrer les services :
 ```bash
-npm start
+docker-compose up -d
 ```
 
-### Backend
-
-1. Naviguer vers le dossier backend :
+4. Vérifier que les services sont opérationnels :
 ```bash
-cd backendpfa
+./monitoring/scripts/check-services.sh
 ```
 
-2. Installer les dépendances Maven :
+## Configuration
+
+### Elasticsearch
+- URL: http://localhost:9200
+- Configuration: `monitoring/config/elasticsearch/elasticsearch.yml`
+
+### Kibana
+- URL: http://localhost:5601
+- Configuration: `monitoring/config/kibana/kibana.yml`
+
+### Logstash
+- Configuration: `monitoring/config/logstash/pipelines/`
+
+### Filebeat
+- Configuration: `monitoring/config/filebeat/filebeat.yml`
+
+## Utilisation
+
+### Accès à Kibana
+1. Ouvrir http://localhost:5601
+2. Se connecter avec les identifiants par défaut :
+   - Utilisateur: elastic
+   - Mot de passe: [votre mot de passe]
+
+### Configuration des Dashboards
+1. Aller dans Kibana > Dashboard
+2. Importer les dashboards prédéfinis :
+   - System Overview
+   - Application Metrics
+   - Security Monitoring
+
+### Configuration des Alertes
+1. Aller dans Kibana > Alerting
+2. Créer de nouvelles règles d'alerte
+3. Configurer les conditions et les actions
+
+## Maintenance
+
+### Sauvegarde
 ```bash
-./mvnw install
+./monitoring/scripts/backup-configs.sh
 ```
 
-3. Démarrer l'application :
+### Restauration
 ```bash
-./mvnw spring-boot:run
+./monitoring/scripts/restore-configs.sh /chemin/vers/backup.tar.gz
 ```
 
-## Tests
-
-### Frontend
+### Mise à jour
 ```bash
-cd frontendPfa
-npm test
+./monitoring/scripts/update-components.sh
 ```
 
-### Backend
-```bash
-cd backendpfa
-./mvnw test
+## Développement
+
+### Structure du Projet
+```
+.
+├── docs/                    # Documentation
+├── monitoring/             # Configuration du monitoring
+│   ├── config/            # Fichiers de configuration
+│   ├── scripts/           # Scripts utilitaires
+│   └── dashboards/        # Dashboards Kibana
+├── .github/               # Configuration GitHub
+└── docker-compose.yml     # Configuration Docker
 ```
 
-## Déploiement
+### Tests
+```bash
+# Tests unitaires
+./monitoring/scripts/run-tests.sh
 
-### Frontend
-L'application frontend peut être déployée sur :
-- Expo
-- App Store (iOS)
-- Google Play Store (Android)
-
-### Backend
-Le backend peut être déployé sur :
-- Heroku
-- AWS
-- Google Cloud Platform
+# Tests d'intégration
+./monitoring/scripts/run-integration-tests.sh
+```
 
 ## Contribution
 
-1. Fork le projet
-2. Créer une branche pour votre fonctionnalité (`git checkout -b feature/AmazingFeature`)
-3. Commit vos changements (`git commit -m 'Add some AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrir une Pull Request
+Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour les directives de contribution.
 
 ## Licence
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails. 
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails. 

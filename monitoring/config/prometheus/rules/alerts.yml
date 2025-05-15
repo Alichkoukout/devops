@@ -1,0 +1,56 @@
+groups:
+- name: monitoring
+  rules:
+  - alert: HighCPUUsage
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High CPU usage
+      description: "CPU usage is above 80% for 5 minutes"
+
+  - alert: HighMemoryUsage
+    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High memory usage
+      description: "Memory usage is above 85% for 5 minutes"
+
+  - alert: HighDiskUsage
+    expr: (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_free_bytes{mountpoint="/"}) / node_filesystem_size_bytes{mountpoint="/"} * 100 > 85
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High disk usage
+      description: "Disk usage is above 85% for 5 minutes"
+
+  - alert: ElasticsearchClusterStatus
+    expr: elasticsearch_cluster_health_status > 1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: Elasticsearch cluster status is not green
+      description: "Elasticsearch cluster status is {{ $value }}"
+
+  - alert: KibanaStatus
+    expr: kibana_status_uptime_in_milliseconds == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: Kibana is down
+      description: "Kibana has been down for more than 5 minutes"
+
+  - alert: LogstashPipelineStatus
+    expr: logstash_pipeline_events_out_total == 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: Logstash pipeline is not processing events
+      description: "Logstash pipeline has not processed any events for 5 minutes" 

@@ -1,31 +1,85 @@
 # Plan des Sprints
 
-## Sprint 1 : Mise en place des fondations
-- Initialisation des projets frontend et backend
-- Configuration du repository Git et des branches
-- Mise en place de l'authentification (inscription, connexion)
-- Configuration CI/CD de base
-- Maquettes des écrans principaux
+## Sprint 1: Configuration de Base (2 semaines)
+### Objectifs
+- Mise en place de l'infrastructure de base
+- Configuration initiale des composants
 
-## Sprint 2 : Gestion de profil et sécurité
-- Gestion du profil utilisateur (affichage, modification)
-- Upload de l'avatar
-- Sécurité backend (JWT, rôles)
-- Tests unitaires de base
-- Documentation technique
+### User Stories
+1. Configuration d'Elasticsearch
+2. Configuration de Logstash
+3. Configuration de Kibana
 
-## Sprint 3 : Fonctionnalités principales
-- Développement de la fonctionnalité principale [à détailler selon le projet]
-- Affichage des données principales
-- Notifications de base
-- Monitoring et logging (Prometheus, ELK)
-- Tests d'intégration
+### Livrables
+- Infrastructure de base opérationnelle
+- Composants configurés et fonctionnels
+- Documentation de configuration
 
-## Sprint 4 : Finalisation et optimisation
-- Optimisation des performances
-- Amélioration de l'UX/UI
-- Tests end-to-end
-- Déploiement sur environnement de staging/production
-- Rédaction de la documentation utilisateur
+## Sprint 2: Monitoring des Logs (2 semaines)
+### Objectifs
+- Mise en place du monitoring des logs
+- Configuration des visualisations
+
+### User Stories
+4. Visualisation des logs système
+5. Configuration des alertes sur les logs
+
+### Livrables
+- Système de monitoring des logs opérationnel
+- Visualisations configurées
+- Système d'alertes fonctionnel
+
+## Sprint 3: Monitoring des Métriques (2 semaines)
+### Objectifs
+- Mise en place du monitoring des métriques
+- Configuration des tableaux de bord
+
+### User Stories
+6. Visualisation des métriques système
+7. Configuration des alertes sur les métriques
+
+### Livrables
+- Système de monitoring des métriques opérationnel
+- Tableaux de bord configurés
+- Système d'alertes fonctionnel
+
+## Sprint 4: Sécurité (2 semaines)
+### Objectifs
+- Mise en place de la sécurité
+- Configuration des utilisateurs et rôles
+
+### User Stories
+8. Gestion des utilisateurs et rôles
+9. Configuration de la sécurité des communications
+
+### Livrables
+- Système de sécurité opérationnel
+- Gestion des utilisateurs fonctionnelle
+- Communications sécurisées
+
+## Sprint 5: Maintenance et Finalisation (2 semaines)
+### Objectifs
+- Mise en place des procédures de maintenance
+- Finalisation du projet
+
+### User Stories
+10. Sauvegarde des configurations
+11. Mise à jour des composants
+
+### Livrables
+- Procédures de maintenance documentées
+- Système de sauvegarde opérationnel
+- Documentation complète
+
+## Planning Global
+- Durée totale: 10 semaines
+- Début: [Date de début]
+- Fin: [Date de fin]
+
+## Points de contrôle
+- Revue de sprint à la fin de chaque sprint
+- Démonstration des fonctionnalités
+- Validation des critères d'acceptation
+- Mise à jour de la documentation
 
 > Ce plan est à adapter selon l'avancement réel et les priorités du produit. 

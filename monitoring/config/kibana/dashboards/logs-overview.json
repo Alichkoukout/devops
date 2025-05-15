@@ -1,0 +1,74 @@
+{
+  "attributes": {
+    "title": "Vue d'ensemble des logs",
+    "hits": 0,
+    "description": "Dashboard principal pour la surveillance des logs",
+    "panelsJSON": [
+      {
+        "type": "visualization",
+        "id": "logs-by-level",
+        "panelIndex": "1",
+        "gridData": {
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 8,
+          "i": "1"
+        },
+        "version": "7.9.0",
+        "embeddableConfig": {
+          "title": "Distribution des logs par niveau"
+        }
+      },
+      {
+        "type": "visualization",
+        "id": "logs-timeline",
+        "panelIndex": "2",
+        "gridData": {
+          "x": 0,
+          "y": 8,
+          "w": 24,
+          "h": 8,
+          "i": "2"
+        },
+        "version": "7.9.0",
+        "embeddableConfig": {
+          "title": "Évolution temporelle des logs"
+        }
+      },
+      {
+        "type": "visualization",
+        "id": "error-logs",
+        "panelIndex": "3",
+        "gridData": {
+          "x": 0,
+          "y": 16,
+          "w": 24,
+          "h": 8,
+          "i": "3"
+        },
+        "version": "7.9.0",
+        "embeddableConfig": {
+          "title": "Logs d'erreur"
+        }
+      }
+    ],
+    "optionsJSON": {
+      "hidePanelTitles": false,
+      "useMargins": true
+    },
+    "version": 1,
+    "timeRestore": false,
+    "kibanaSavedObjectMeta": {
+      "searchSourceJSON": {
+        "query": {
+          "query_string": {
+            "query": "*",
+            "analyze_wildcard": true
+          }
+        },
+        "filter": []
+      }
+    }
+  }
+} 

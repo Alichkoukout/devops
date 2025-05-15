@@ -1,0 +1,23 @@
+{
+  "attributes": {
+    "title": "Recherche de logs",
+    "description": "Recherche principale pour les logs",
+    "hits": 0,
+    "columns": ["@timestamp", "level", "message", "type"],
+    "sort": [["@timestamp", "desc"]],
+    "kibanaSavedObjectMeta": {
+      "searchSourceJSON": "{\"highlightAll\":true,\"version\":true,\"query\":{\"language\":\"kuery\",\"query\":\"\"},\"filter\":[],\"indexRefName\":\"kibanaSavedObjectMeta.searchSourceJSON.index\"}"
+    }
+  },
+  "references": [
+    {
+      "name": "kibanaSavedObjectMeta.searchSourceJSON.index",
+      "type": "index-pattern",
+      "id": "filebeat-*"
+    }
+  ],
+  "migrationVersion": {
+    "search": "7.17.0"
+  },
+  "coreMigrationVersion": "7.17.0"
+} 

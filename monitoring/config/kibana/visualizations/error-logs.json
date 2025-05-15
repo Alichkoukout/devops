@@ -1,0 +1,76 @@
+{
+  "attributes": {
+    "title": "Logs d'erreur",
+    "visState": {
+      "title": "Logs d'erreur",
+      "type": "table",
+      "params": {
+        "perPage": 10,
+        "showPartialRows": false,
+        "showMeticsAtAllLevels": false,
+        "sort": {
+          "columnIndex": null,
+          "direction": null
+        },
+        "showTotal": false,
+        "totalFunc": "sum"
+      },
+      "aggs": [
+        {
+          "id": "1",
+          "enabled": true,
+          "type": "count",
+          "schema": "metric",
+          "params": {}
+        },
+        {
+          "id": "2",
+          "enabled": true,
+          "type": "terms",
+          "schema": "bucket",
+          "params": {
+            "field": "level",
+            "size": 5,
+            "order": "desc",
+            "orderBy": "1",
+            "otherBucket": false,
+            "otherBucketLabel": "Other",
+            "missingBucket": false,
+            "missingBucketLabel": "Missing"
+          }
+        },
+        {
+          "id": "3",
+          "enabled": true,
+          "type": "terms",
+          "schema": "bucket",
+          "params": {
+            "field": "message",
+            "size": 5,
+            "order": "desc",
+            "orderBy": "1",
+            "otherBucket": false,
+            "otherBucketLabel": "Other",
+            "missingBucket": false,
+            "missingBucketLabel": "Missing"
+          }
+        }
+      ]
+    },
+    "uiStateJSON": "{}",
+    "description": "Tableau des logs d'erreur",
+    "savedSearchRefName": "search_0",
+    "version": 1,
+    "kibanaSavedObjectMeta": {
+      "searchSourceJSON": {
+        "query": {
+          "query_string": {
+            "query": "level: ERROR OR level: FATAL",
+            "analyze_wildcard": true
+          }
+        },
+        "filter": []
+      }
+    }
+  }
+} 

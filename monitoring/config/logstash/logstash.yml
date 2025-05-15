@@ -1,0 +1,22 @@
+http.host: "0.0.0.0"
+path.config: /usr/share/logstash/pipeline
+xpack.monitoring.enabled: true
+xpack.monitoring.elasticsearch.hosts: ["http://elasticsearch:9200"]
+xpack.monitoring.elasticsearch.username: logstash
+xpack.monitoring.elasticsearch.password: ${LOGSTASH_PASSWORD}
+
+# Configuration de la mémoire
+jvm.options: "-Xms256m -Xmx256m"
+
+# Configuration des logs
+log.level: info
+path.logs: /usr/share/logstash/logs
+
+# Configuration des pipelines
+pipeline.workers: 2
+pipeline.batch.size: 125
+pipeline.batch.delay: 50
+
+# Configuration de la persistance
+queue.type: persisted
+path.queue: /usr/share/logstash/data/queue 

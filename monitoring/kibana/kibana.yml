@@ -1,0 +1,53 @@
+server.name: kibana
+server.host: "0.0.0.0"
+elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+elasticsearch.username: ${ELASTIC_USER}
+elasticsearch.password: ${ELASTIC_PASSWORD}
+
+xpack.security.enabled: true
+xpack.reporting.enabled: true
+xpack.encryptedSavedObjects.encryptionKey: "${ENCRYPTION_KEY}"
+
+monitoring.ui.container.elasticsearch.enabled: true
+
+# Configuration des index patterns
+kibana.index: ".kibana"
+kibana.defaultAppId: "discover"
+
+# Configuration des timeouts
+elasticsearch.requestTimeout: 30000
+elasticsearch.pingTimeout: 30000
+
+# Configuration des logs
+logging:
+  appenders:
+    file:
+      type: file
+      fileName: /var/log/kibana/kibana.log
+      layout:
+        type: pattern
+  root:
+    appenders: [file]
+    level: info
+
+# Configuration des tableaux de bord par défaut
+kibana.defaultRoute: "/app/dashboards#/view/application-logs"
+
+# Configuration des alertes
+xpack.alerting.enabled: true
+xpack.actions.enabled: true
+
+# Configuration des rapports
+xpack.reporting.capture.browser.type: chromium
+xpack.reporting.queue.timeout: 120000
+
+# Configuration des espaces
+xpack.spaces.enabled: true
+
+# Configuration des rôles par défaut
+xpack.security.audit.enabled: true
+xpack.security.audit.appender:
+  type: file
+  fileName: /var/log/kibana/audit.log
+  layout:
+    type: pattern 

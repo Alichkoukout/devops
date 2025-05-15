@@ -1,0 +1,38 @@
+{
+  "cluster": [
+    "monitor",
+    "manage_index_templates",
+    "manage_ilm"
+  ],
+  "indices": [
+    {
+      "names": [
+        "filebeat-*",
+        "logstash-*"
+      ],
+      "privileges": [
+        "read",
+        "write",
+        "delete",
+        "create_index",
+        "manage"
+      ]
+    }
+  ],
+  "applications": [
+    {
+      "application": "kibana-.kibana",
+      "privileges": [
+        "read",
+        "write"
+      ],
+      "resources": [
+        "space:default"
+      ]
+    }
+  ],
+  "run_as": [],
+  "metadata": {
+    "version": 1
+  }
+} 

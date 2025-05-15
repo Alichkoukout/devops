@@ -1,0 +1,52 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/application/*.log
+  fields:
+    type: spring-boot
+  json.keys_under_root: true
+  json.add_error_key: true
+
+- type: log
+  enabled: true
+  paths:
+    - /var/log/nginx/*.log
+  fields:
+    type: nginx
+
+- type: log
+  enabled: true
+  paths:
+    - /var/log/mysql/*.log
+  fields:
+    type: mysql
+
+# Configuration de la sortie Logstash
+output.logstash:
+  hosts: ["logstash:5044"]
+  ssl.enabled: true
+  ssl.certificate_authorities: ["/usr/share/filebeat/config/certs/ca.crt"]
+  ssl.certificate: "/usr/share/filebeat/config/certs/filebeat.crt"
+  ssl.key: "/usr/share/filebeat/config/certs/filebeat.key"
+
+# Configuration du monitoring
+monitoring:
+  enabled: true
+  elasticsearch:
+    hosts: ["http://elasticsearch:9200"]
+    username: filebeat
+    password: ${FILEBEAT_PASSWORD}
+
+# Configuration des logs
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /usr/share/filebeat/logs
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644
+
+# Configuration de la persistance
+filebeat.registry.path: /usr/share/filebeat/data/registry
+filebeat.registry.file_permissions: 0644 

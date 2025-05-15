@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certs/elasticsearch.key
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certs/elasticsearch.crt
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certs/ca.crt
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /opt/monitoring/data/elasticsearch:/usr/share/elasticsearch/data
+      - /opt/monitoring/config/elasticsearch:/usr/share/elasticsearch/config
+      - /opt/monitoring/certs:/usr/share/elasticsearch/config/certs
+    ports:
+      - "9200:9200"
+    networks:
+      - monitoring
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.17.0
+    container_name: logstash
+    environment:
+      - LS_JAVA_OPTS=-Xms256m -Xmx256m
+      - xpack.monitoring.enabled=true
+      - xpack.monitoring.elasticsearch.hosts=["http://elasticsearch:9200"]
+      - xpack.monitoring.elasticsearch.username=logstash
+      - xpack.monitoring.elasticsearch.password=${LOGSTASH_PASSWORD}
+    volumes:
+      - /opt/monitoring/config/logstash:/usr/share/logstash/config
+      - /opt/monitoring/pipeline:/usr/share/logstash/pipeline
+      - /opt/monitoring/certs:/usr/share/logstash/config/certs
+    ports:
+      - "5044:5044"
+      - "5000:5000"
+    depends_on:
+      - elasticsearch
+    networks:
+      - monitoring
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.0
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+      - SERVER_SSL_ENABLED=true
+      - SERVER_SSL_CERTIFICATE=/usr/share/kibana/config/certs/kibana.crt
+      - SERVER_SSL_KEY=/usr/share/kibana/config/certs/kibana.key
+    volumes:
+      - /opt/monitoring/config/kibana:/usr/share/kibana/config
+      - /opt/monitoring/certs:/usr/share/kibana/config/certs
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - monitoring
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.17.0
+    container_name: filebeat
+    user: root
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=filebeat
+      - ELASTICSEARCH_PASSWORD=${FILEBEAT_PASSWORD}
+    volumes:
+      - /opt/monitoring/config/filebeat:/usr/share/filebeat/config
+      - /var/log/application:/var/log/application:ro
+      - /var/log/nginx:/var/log/nginx:ro
+      - /var/log/mysql:/var/log/mysql:ro
+      - /opt/monitoring/certs:/usr/share/filebeat/config/certs
+    depends_on:
+      - elasticsearch
+      - logstash
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge 

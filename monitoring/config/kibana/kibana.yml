@@ -1,0 +1,35 @@
+server.name: kibana
+server.host: "0.0.0.0"
+elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+elasticsearch.username: kibana
+elasticsearch.password: ${KIBANA_PASSWORD}
+
+# Configuration SSL
+server.ssl.enabled: true
+server.ssl.certificate: /usr/share/kibana/config/certs/kibana.crt
+server.ssl.key: /usr/share/kibana/config/certs/kibana.key
+
+# Configuration de la sécurité
+xpack.security.enabled: true
+xpack.encryptedSavedObjects.encryptionKey: "something_at_least_32_characters_long"
+xpack.reporting.encryptionKey: "something_at_least_32_characters_long"
+
+# Configuration des logs
+logging:
+  appenders:
+    file:
+      type: file
+      fileName: /usr/share/kibana/logs/kibana.log
+      layout:
+        type: pattern
+  root:
+    appenders: [file]
+    level: info
+
+# Configuration des index patterns par défaut
+kibana.index: ".kibana"
+kibana.defaultAppId: "discover"
+
+# Configuration des timeouts
+elasticsearch.requestTimeout: 30000
+elasticsearch.pingTimeout: 30000 

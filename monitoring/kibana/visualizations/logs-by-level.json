@@ -1,0 +1,24 @@
+{
+  "attributes": {
+    "title": "Distribution des logs par niveau",
+    "visState": "{\"title\":\"Distribution des logs par niveau\",\"type\":\"pie\",\"params\":{\"type\":\"pie\",\"addTooltip\":true,\"addLegend\":true,\"legendPosition\":\"right\",\"isDonut\":false,\"labels\":{\"show\":false,\"values\":true,\"last_level\":true,\"truncate\":100}},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"level\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\"}}],\"listeners\":{}}",
+    "uiStateJSON": "{}",
+    "description": "",
+    "savedSearchRefName": "search_0",
+    "version": 1,
+    "kibanaSavedObjectMeta": {
+      "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"kuery\"},\"filter\":[]}"
+    }
+  },
+  "references": [
+    {
+      "name": "search_0",
+      "type": "search",
+      "id": "logs-search"
+    }
+  ],
+  "migrationVersion": {
+    "visualization": "7.17.0"
+  },
+  "coreMigrationVersion": "7.17.0"
+} 

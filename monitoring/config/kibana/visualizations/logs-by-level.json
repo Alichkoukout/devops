@@ -1,0 +1,58 @@
+{
+  "attributes": {
+    "title": "Logs par niveau",
+    "visState": {
+      "title": "Logs par niveau",
+      "type": "pie",
+      "params": {
+        "type": "pie",
+        "addTooltip": true,
+        "addLegend": true,
+        "legendPosition": "right",
+        "isDonut": false,
+        "labels": {
+          "show": true,
+          "values": true,
+          "last_level": true,
+          "truncate": 100
+        }
+      },
+      "aggs": [
+        {
+          "id": "1",
+          "enabled": true,
+          "type": "count",
+          "schema": "metric",
+          "params": {}
+        },
+        {
+          "id": "2",
+          "enabled": true,
+          "type": "terms",
+          "schema": "segment",
+          "params": {
+            "field": "level",
+            "size": 5,
+            "order": "desc",
+            "orderBy": "1"
+          }
+        }
+      ]
+    },
+    "uiStateJSON": "{}",
+    "description": "Distribution des logs par niveau",
+    "savedSearchRefName": "search_0",
+    "version": 1,
+    "kibanaSavedObjectMeta": {
+      "searchSourceJSON": {
+        "query": {
+          "query_string": {
+            "query": "*",
+            "analyze_wildcard": true
+          }
+        },
+        "filter": []
+      }
+    }
+  }
+} 

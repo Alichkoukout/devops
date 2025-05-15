@@ -1,0 +1,28 @@
+# Fichiers sensibles
+.env
+*.pem
+*.key
+*.crt
+
+# Fichiers de backup
+/opt/monitoring/backups/
+*.tar.gz
+
+# Fichiers temporaires
+*.log
+*.tmp
+*.temp
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Fichiers IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Fichiers de dépendances
+node_modules/
+vendor/ 

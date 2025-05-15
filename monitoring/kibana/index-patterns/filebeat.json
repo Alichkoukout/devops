@@ -1,0 +1,36 @@
+{
+  "attributes": {
+    "title": "filebeat-*",
+    "timeFieldName": "@timestamp",
+    "fields": [
+      {
+        "name": "@timestamp",
+        "type": "date",
+        "esTypes": ["date"],
+        "searchable": true,
+        "aggregatable": true
+      },
+      {
+        "name": "level",
+        "type": "string",
+        "esTypes": ["keyword"],
+        "searchable": true,
+        "aggregatable": true
+      },
+      {
+        "name": "message",
+        "type": "string",
+        "esTypes": ["text"],
+        "searchable": true,
+        "aggregatable": false
+      },
+      {
+        "name": "type",
+        "type": "string",
+        "esTypes": ["keyword"],
+        "searchable": true,
+        "aggregatable": true
+      }
+    ]
+  }
+} 

@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: grafana
+  name: grafana-alt
   namespace: monitoring
 spec:
-  replicas: 1
+  replicas: 2  
   selector:
     matchLabels:
-      app: grafana
+      app: grafana-alt
   template:
     metadata:
       labels:
-        app: grafana
+        app: grafana-alt
     spec:
       containers:
       - name: grafana
@@ -22,10 +22,12 @@ spec:
         - name: GF_SECURITY_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: grafana-secrets
+              name: grafana-alt-secrets
               key: admin-password
         - name: GF_INSTALL_PLUGINS
-          value: "grafana-piechart-panel,grafana-worldmap-panel"
+          value: "grafana-piechart-panel,grafana-worldmap-panel,grafana-clock-panel"
+        - name: GF_AUTH_ANONYMOUS_ENABLED
+          value: "false"
         volumeMounts:
         - name: config
           mountPath: /etc/grafana/provisioning
@@ -33,75 +35,28 @@ spec:
           mountPath: /var/lib/grafana
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "100m"
+            memory: "512Mi"  # Ressources augmentées
+            cpu: "250m"
           limits:
-            memory: "512Mi"
-            cpu: "200m"
+            memory: "1Gi"
+            cpu: "500m"
       volumes:
       - name: config
         configMap:
-          name: grafana-config
+          name: grafana-alt-config
       - name: storage
         persistentVolumeClaim:
-          claimName: grafana-storage
+          claimName: grafana-alt-storage
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: grafana
+  name: grafana-alt
   namespace: monitoring
 spec:
   selector:
-    app: grafana
+    app: grafana-alt
   ports:
   - port: 3000
     targetPort: 3000
   type: LoadBalancer
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: grafana-config
-  namespace: monitoring
-data:
-  datasources.yaml: |
-    apiVersion: 1
-    datasources:
-    - name: Prometheus
-      type: prometheus
-      access: proxy
-      url: http://prometheus:9090
-      isDefault: true
-  dashboards.yaml: |
-    apiVersion: 1
-    providers:
-    - name: 'default'
-      orgId: 1
-      folder: ''
-      type: file
-      disableDeletion: false
-      editable: true
-      options:
-        path: /var/lib/grafana/dashboards
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: grafana-storage
-  namespace: monitoring
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: grafana-secrets
-  namespace: monitoring
-type: Opaque
-data:
-  admin-password: YWRtaW4=  # base64 encoded "admin" 
